@@ -2,12 +2,15 @@ import http from 'http'
 import React from 'react'
 //modulo server para renderizar react desde el server
 //renderToString renderizar la aplicacion en un string con html
-import { renderToString } from 'react-dom/server'
+
+//renderToStaticMarkup renderizar sin los ids, data react root, html estatico
+import { renderToString, renderToStaticMarkup } from 'react-dom/server'
 
 //handle router 
 
 import { ServerRouter, createServerRenderContext } from 'react-router'
 import Pages from './pages/containers/Page.jsx'
+import Layout from './pages/components/Layout.jsx'
 
 
 //Manejador de peticiones http
@@ -47,7 +50,14 @@ function requestHandle(request, response) {
         )
 
     }
-    response.write(html)
+    response.write(
+        renderToStaticMarkup(
+            <Layout
+                title="Aplicación"
+                content={html}
+            />
+        )
+    )
     response.end()
 }
 
