@@ -4,7 +4,7 @@ module.exports = {
     entry: './source/client.js',
     output: {
         filename: 'app.js',
-        path: path.resolve(__dirname, '../build/statics'),
+        path: path.resolve(__dirname, '../built/statics'),
     },
     module: {
         loaders: [
@@ -23,5 +23,5 @@ module.exports = {
             }
         ]
     },
-    target: 'node'
+    target: 'web'
 }
