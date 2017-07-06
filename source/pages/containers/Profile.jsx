@@ -3,6 +3,7 @@ import { Link } from 'react-router'
 
 import Post from '../../posts/containers/Post.jsx'
 import api from '../../api.js'
+import Loading from '../../shared/components/Loading.jsx'
 
 class Profile extends Component {
     constructor(props) {
@@ -31,6 +32,9 @@ class Profile extends Component {
         })
     }
     render() {
+        if(this.state.loading){
+            return <Loading />
+        }
         return (
             <section name="profile">
                 <h2>Profile of {this.state.user.name}</h2>
