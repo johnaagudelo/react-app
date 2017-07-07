@@ -5306,7 +5306,7 @@ class Post extends _react.Component {
 
         return _asyncToGenerator(function* () {
             if (!!_this.state.user && !!_this.state.comments) return _this.setState({ loading: false });
-            const [user, comments] = yield Promise.all([!_this.state.user ? _api2.default.users.getSingle(_this.props.userId) : Promise.resolve(null), !_this.state.comments ? _api2.default.users.getComments(_this.props.id) : Promise.resolve(null)]);
+            const [user, comments] = yield Promise.all([!_this.state.user ? _api2.default.users.getSingle(_this.props.userId) : Promise.resolve(null), !_this.state.comments ? _api2.default.posts.getComments(_this.props.id) : Promise.resolve(null)]);
             _this.setState({
                 loading: false,
                 user: user || _this.state.user,
@@ -10871,6 +10871,8 @@ class Home extends _react.Component {
             posts: [],
             loading: true
         };
+
+        this.handleScroll = this.handleScroll.bind(this);
     }
     componentDidMount() {
         var _this = this;
@@ -10883,8 +10885,44 @@ class Home extends _react.Component {
                 page: _this.state.page + 1,
                 loading: false
             });
+
+            window.addEventListener('scroll', _this.handleScroll);
         })();
     }
+
+    componentnWillUnmount() {
+        window.removeEventListener('scroll', this.handleScroll);
+    }
+
+    handleScroll(event) {
+        var _this2 = this;
+
+        if (this.state.loading) return null;
+
+        const scrolled = window.scrollY;
+        const viewportHeight = window.innerHeight;
+        const fullHeight = document.body.clientHeight;
+
+        if (!(scrolled + viewportHeight + 300 >= fullHeight)) {
+            return null;
+        }
+
+        this.setState({ loading: true }, _asyncToGenerator(function* () {
+            try {
+                const posts = yield _api2.default.posts.getList(_this2.state.page);
+
+                _this2.setState({
+                    posts: _this2.state.posts.concat(posts),
+                    page: _this2.state.page + 1,
+                    loading: false
+                });
+            } catch (error) {
+                console.error(error);
+                _this2.setState({ loading: false });
+            }
+        }));
+    }
+
     render() {
         return _react2.default.createElement(
             'section',
@@ -10897,8 +10935,8 @@ class Home extends _react.Component {
             _react2.default.createElement(
                 'section',
                 null,
-                this.state.loading && _react2.default.createElement(_Loading2.default, null),
-                this.state.posts.map(post => _react2.default.createElement(_Post2.default, _extends({ key: post.id }, post)))
+                this.state.posts.map(post => _react2.default.createElement(_Post2.default, _extends({ key: post.id }, post))),
+                this.state.loading && _react2.default.createElement(_Loading2.default, null)
             )
         );
     }
